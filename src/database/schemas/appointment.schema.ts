@@ -12,7 +12,6 @@ export const appointmentSchema = new mongoose.Schema({
     required: true,
   },
   date: { type: Date, required: true },
-  time: { type: String, required: true },
   notes: { type: String },
   status: {
     type: String,
