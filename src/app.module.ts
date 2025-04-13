@@ -9,7 +9,15 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-        AppointmentsModule, ConfigModule.forRoot(), DatabaseModule, AuthModule, UsersModule],
+    // finish
+    AppointmentsModule,
+    ConfigModule.forRoot(),
+    DatabaseModule,
+    // finish
+    AuthModule,
+    // finish
+    UsersModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

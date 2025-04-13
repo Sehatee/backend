@@ -8,6 +8,7 @@ import { Appointment } from './interfaces/appointment.interface';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UsersService } from 'src/users/users.service';
 import * as moment from 'moment';
+import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 
 @Injectable()
 export class AppointmentsService {
@@ -15,6 +16,7 @@ export class AppointmentsService {
     @Inject('APPOINTMENTS_MODEL') private appointmentModel: Model<Appointment>,
     private usersService: UsersService,
   ) {}
+  //finish
   async createAppointment(body: CreateAppointmentDto): Promise<Appointment> {
     const appointment = await this.appointmentModel.create(body);
     const doctor = await this.usersService.findOne(body.doctorId);
@@ -26,7 +28,7 @@ export class AppointmentsService {
     if (!isAvailable) {
       throw new HttpException('Doctor is not available on this Date', 403);
     }
-    
+
     return appointment;
   }
   //check if the appointment is in true data
@@ -49,5 +51,56 @@ export class AppointmentsService {
       throw new HttpException(' Doctor not available on this day', 404);
     }
     return true;
+  }
+  //finish
+  async updateAppointment(
+    body: UpdateAppointmentDto,
+    appointmentId: string,
+    doctorId: string,
+  ): Promise<Appointment> {
+    const appointment = await this.appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      throw new HttpException('not found this appointment', 404);
+    }
+    if (!(appointment.doctorId.toString() === doctorId)) {
+      throw new HttpException('this appointment not for you', 401);
+    }
+    const updatedAppointment = await this.appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      body,
+      { new: true },
+    );
+
+    return updatedAppointment;
+  }
+  //finish
+  async deleteAppointment(
+    appointmentId: string,
+    doctorId: string,
+  ): Promise<void> {
+    const appointment = await this.appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      throw new HttpException('not found this appointment', 404);
+    }
+    if (!(appointment.doctorId.toString() === doctorId)) {
+      throw new HttpException('this appointment not for you', 401);
+    }
+    await this.appointmentModel.findByIdAndDelete(appointmentId);
+    return;
+  }
+  // Get one appointment By Doctor
+  //finish
+  async findOneAppointment(
+    doctorId: string,
+    appointmentId: string,
+  ): Promise<Appointment> {
+    const appointment = await this.appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      throw new HttpException('not found this appointment', 404);
+    }
+    if (!(appointment.doctorId.toString() === doctorId)) {
+      throw new HttpException('this appointment not for you', 401);
+    }
+    return appointment;
   }
 }

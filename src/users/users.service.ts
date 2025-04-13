@@ -24,10 +24,10 @@ export class UsersService {
     return await this.userModel.create(user);
   }
   async signUp(user: User): Promise<User> {
-    user.role = 'patient';
-    if (user.role !== 'patient') {
-      throw new HttpException('Invalid role', 400);
-    }
+    // user.role = 'patient';
+    // if (user.role !== 'patient') {
+    //   throw new HttpException('Invalid role', 400);
+    // } // إنزع التعليق في حالة الProd
     return await this.userModel.create(user);
   }
   async findAll(query?: any): Promise<{ resalut: number; users: User[] }> {

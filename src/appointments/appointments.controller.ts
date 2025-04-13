@@ -1,8 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
+  HttpCode,
   HttpException,
+  Param,
+  Patch,
   Post,
+  Query,
   Request,
   UseGuards,
   UseInterceptors,
@@ -14,6 +20,8 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/Role.guard';
 import { Roles } from 'src/users/decorators/Roles.decorator';
 import { ResponseInterceptorAppointments } from './interceptors/res.interceptor';
+import { query } from 'express';
+import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 
 @Controller('appointments')
 @UseInterceptors(ResponseInterceptorAppointments)
@@ -29,7 +37,52 @@ export class AppointmentsController {
   ): Promise<Appointment> {
     body.patientId = req.user.id;
     body.status = 'pending';
-    
+
     return await this.appointmentsService.createAppointment(body);
+  }
+  @Get('/:id')
+  @UseGuards(RolesGuard)
+  @Roles('doctor')
+  async getOneAppointment(
+    @Param() params: { id: string },
+    @Request() req: any,
+  ): Promise<Appointment> {
+    const doctorId = req.user.id;
+    return await this.appointmentsService.findOneAppointment(
+      doctorId,
+      params.id,
+    );
+  }
+  @Patch('/:id')
+  @UseGuards(RolesGuard)
+  @Roles('doctor')
+  async updateAppointment(
+    @Param()
+    params: {
+      id: string;
+    },
+    @Request() req: any,
+    @Body() body: UpdateAppointmentDto,
+  ): Promise<Appointment> {
+    const doctorId = req.user.id;
+    return this.appointmentsService.updateAppointment(
+      body,
+      params.id,
+      doctorId,
+    );
+  }
+  @Delete('/:id')
+  @HttpCode(204)
+  @UseGuards(RolesGuard)
+  @Roles('doctor')
+  async deleteAppointment(
+    @Param()
+    params: {
+      id: string;
+    },
+    @Request() req: any,
+  ): Promise<void> {
+    const doctorId = req.user.id;
+    return this.appointmentsService.deleteAppointment(params.id, doctorId);
   }
 }
