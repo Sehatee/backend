@@ -10,6 +10,26 @@ export const userSchema = new mongoose.Schema({
   picture: { type: String },
   specialization: { type: String }, // خاص بالأطباء فقط
   appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' }],
+  // ✅ إضافة جدول المواعيد المتاحة للأطباء
+  availableHours: {
+    type: [
+      {
+        day: {
+          type: String,
+          enum: [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+          ],
+        },
+      },
+    ],
+    default: [],
+  },
   location: {
     type: {
       type: String,
@@ -18,6 +38,11 @@ export const userSchema = new mongoose.Schema({
     },
     coordinates: [Number],
     addrss: String,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+    required: true,
   },
   createdAt: { type: Date, default: Date.now },
 });

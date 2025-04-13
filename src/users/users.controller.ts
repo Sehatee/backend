@@ -3,9 +3,11 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -25,8 +27,10 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @Roles('admin')
   @Get()
-  async getAllUsers(): Promise<{ resalut: number; users: User[] }> {
-    const users = await this.usersSrevice.findAll();
+  async getAllUsers(
+    @Query() query: any,
+  ): Promise<{ resalut: number; users: User[] }> {
+    const users = await this.usersSrevice.findAll(query);
     return { resalut: users.users.length, users: users.users };
   }
   @UseGuards(RolesGuard)
@@ -36,8 +40,12 @@ export class UsersController {
     return await this.usersSrevice.createUser(user);
   }
   @Get('/:id')
-  async getUser(@Param() id: string): Promise<User> {
-    return await this.usersSrevice.findOne(id);
+  async getUser(@Param() params: { id: string }): Promise<User | string> {
+    const user = await this.usersSrevice.findOne(params.id);
+    if (!user) {
+      throw new HttpException('User not found with that id ', 404);
+    }
+    return user;
   }
   @UseGuards(RolesGuard)
   @Roles('admin')
@@ -52,6 +60,10 @@ export class UsersController {
   @Roles('admin')
   @Delete('/:id')
   async deleteUser(@Param() params: { id: string }): Promise<void> {
+    const user = await this.usersSrevice.findOne(params.id);
+    if (!user) {
+      throw new HttpException('User not found with that id ', 404);
+    }
     await this.usersSrevice.deleteUser(params.id);
   }
 }

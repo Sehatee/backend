@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsPhoneNumber, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsPhoneNumber, IsString } from 'class-validator';
 
 class Location {
   type: string;
@@ -25,4 +25,6 @@ export class createUserDto {
   @IsString()
   specialization: string; // ? only if user is doctor
   location: Location;
+  @IsBoolean()
+    active: boolean;
 }

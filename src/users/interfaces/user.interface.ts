@@ -9,10 +9,16 @@ export interface User {
   specialization: string; // خاص بالأطباء فقط
   createdAt: Date;
   location: Location;
+  active: boolean;
+  appointments: any[];
+  availableHours: availableHours[];
 }
 
 type Location = {
   type: string;
   coordinates: number[];
-  addrss: string,
+  addrss: string;
+};
+type availableHours = {
+  day: string;
 };

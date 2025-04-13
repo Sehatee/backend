@@ -12,7 +12,9 @@ import {
   IsPhoneNumber,
   IsString,
   Max,
+  MaxLength,
   Min,
+  MinLength,
   ValidateNested,
 } from 'class-validator';
 
@@ -32,36 +34,6 @@ export class Location {
   address: string; // تصحيح الاسم من `addrss` إلى `address`
 }
 export class UpdateUserDto {
-  @IsString()
   @IsOptional()
-  username: string;
-  @IsString()
-  @IsEmail()
-  @IsOptional()
-  email: string;
-  @IsString()
-  @IsOptional()
-  password: string;
-  @IsString()
-  @IsOptional()
-  confirmPassword: string;
-  @IsEnum(['admin', 'doctor', 'patient'])
-  @IsOptional()
-  role: 'admin' | 'doctor' | 'patient';
-  // @IsPhoneNumber('AL')// ممكن تتغير
-  @IsString()
-  @IsOptional()
-  phone: string;
-  @IsString()
-  @IsOptional()
-  picture: string;
-  @IsString()
-  @IsOptional()
-  specialization: string; // ? only if user is doctor
-  @ValidateNested()
-  @Type(() => Location)
-  location: Location;
-  @IsBoolean()
-  @IsOptional()
-  active: boolean;
+  appointments: string[];
 }

@@ -7,6 +7,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/interfaces/user.interface';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { LoginDto } from 'src/users/dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,17 +16,16 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
-  async loginIn(
-    email: string,
-    password: string,
-  ): Promise<{ token: string; user: User }> {
-    const user = await this.usersService.findByEmail(email);
+  async loginIn(body: LoginDto): Promise<{ token: string; user: User }> {
+    const user = await this.usersService.findByEmail(body.email);
 
     if (!user) {
       throw new HttpException('User not found', 404);
     }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (user.active === false) {
+      throw new UnauthorizedException('User is inactive Please contact the administrator ');
+    }
+    const isPasswordValid = await bcrypt.compare(body.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
     }
@@ -52,9 +53,10 @@ export class AuthService {
   async getMe(email: string): Promise<User> {
     return await this.usersService.findByEmail(email);
   }
-  async crateNewUser(user: User): Promise<User> {
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    user.password = hashedPassword;
-    return await this.usersService.createUser(user);
+  async updateMe(id: string, user: UpdateUserDto): Promise<User> {
+    return await this.usersService.updateUser(id, user);
+  }
+  async deleteMe(id: string): Promise<{ message: string }> {
+    return await this.usersService.deleteMe(id);
   }
 }

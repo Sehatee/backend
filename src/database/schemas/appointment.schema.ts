@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import * as moment from 'moment';
 
 export const appointmentSchema = new mongoose.Schema({
   patientId: {
