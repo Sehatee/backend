@@ -1,3 +1,6 @@
+import { MedicalRecordsModule } from './medicalRecords/medicalrecords.module';
+import { MedicalRecordsService } from './medicalRecords/medicalrecords.service';
+import { MedicalRecordsController } from './medicalRecords/medicalrecords.controller';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -17,6 +20,7 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
     // finish
     UsersModule,
+    MedicalRecordsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
