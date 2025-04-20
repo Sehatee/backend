@@ -2,12 +2,12 @@
 https://docs.nestjs.com/providers#services
 */
 
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { MedicalRecord } from './interfaces/medicalRecord.interface';
 import { Model } from 'mongoose';
 import { CreateMedicalRecordDto } from './dto/create-medical.dto';
 import APIFeatures from 'src/utils/apiFeaturs';
-import { medicalProviders } from './provider/medicalRecord.provider';
+import { UpdateMedicalRecordDto } from './dto/update-medical.dto';
 
 @Injectable()
 export class MedicalRecordsService {
@@ -16,12 +16,6 @@ export class MedicalRecordsService {
     private readonly medicalRecordModel: Model<MedicalRecord>,
   ) {}
   //this action only for admin
-  async createMedicalRecord(
-    medicalRecord: CreateMedicalRecordDto,
-  ): Promise<MedicalRecord> {
-    const newMedicalRecord = this.medicalRecordModel.create(medicalRecord);
-    return newMedicalRecord;
-  }
   async getAllMedicalRecords(query: any): Promise<MedicalRecord[]> {
     const features = new APIFeatures(this.medicalRecordModel.find(), query);
     const medicalRecords = await features
@@ -30,5 +24,62 @@ export class MedicalRecordsService {
       .limitFields()
       .paginate().query;
     return medicalRecords;
+  }
+  async createMedicalRecord(
+    medicalRecord: CreateMedicalRecordDto,
+  ): Promise<MedicalRecord> {
+    
+    const newMedicalRecord = this.medicalRecordModel.create(medicalRecord);
+    return newMedicalRecord;
+  }
+  async getMedicalRecordsByDoctor(id: string): Promise<MedicalRecord[]> {
+    const doctorMedicalRecords = await this.medicalRecordModel
+      .find({
+        doctorId: id,
+      })
+      .populate([
+        {
+          path: 'patientId',
+          select: 'username email ',
+        },
+      ]);
+
+    return doctorMedicalRecords;
+  }
+  async updateMedicalRecord(
+    body: UpdateMedicalRecordDto,
+    medicalRecordId: string,
+    doctorId: string,
+  ): Promise<MedicalRecord> {
+    const medicalRecord =
+      await this.medicalRecordModel.findById(medicalRecordId);
+    if (!medicalRecord) {
+      throw new HttpException('not found this medical Record', 404);
+    }
+    if (!(medicalRecord.doctorId.toString() === doctorId)) {
+      throw new HttpException('this medical Record not for you', 401);
+    }
+    const updatedMdicalRecord = await this.medicalRecordModel.findByIdAndUpdate(
+      medicalRecordId,
+      body,
+      { new: true },
+    );
+
+    return updatedMdicalRecord;
+  }
+  async deleteMediclalRecord(
+    medicalRecordId: string,
+    doctorId: string,
+  ): Promise<void> {
+    const medicalRecord =
+      await this.medicalRecordModel.findById(medicalRecordId);
+    if (!medicalRecord) {
+      throw new HttpException('not found this medical Record', 404);
+    }
+    if (!(medicalRecord.doctorId.toString() === doctorId)) {
+      throw new HttpException('this medical Record not for you', 401);
+    }
+    await this.medicalRecordModel.findByIdAndDelete(medicalRecordId);
+    return;
   }
 }

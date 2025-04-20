@@ -20,6 +20,8 @@ import { ConfigModule } from '@nestjs/config';
     AuthModule,
     // finish
     UsersModule,
+    //finish
+    AppointmentsModule,
     MedicalRecordsModule,
   ],
   controllers: [AppController],

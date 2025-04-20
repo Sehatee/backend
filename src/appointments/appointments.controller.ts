@@ -53,6 +53,14 @@ export class AppointmentsController {
       params.id,
     );
   }
+  @Get()
+  @UseGuards(RolesGuard)
+  @Roles('doctor')
+  async getAllAppointmentsByDoctor(
+    @Param() params: { id: string },
+  ): Promise<Appointment[]> {
+    return await this.appointmentsService.getAllAppointmentsByDoctor(params.id);
+  }
   @Patch('/:id')
   @UseGuards(RolesGuard)
   @Roles('doctor')

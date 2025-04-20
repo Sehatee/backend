@@ -103,4 +103,10 @@ export class AppointmentsService {
     }
     return appointment;
   }
+  async getAllAppointmentsByDoctor(id: string): Promise<Appointment[]> {
+    const doctorAppointments = await this.appointmentModel.find({
+      doctorId: id,
+    });
+    return doctorAppointments;
+  }
 }
