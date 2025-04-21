@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import * as moment from 'moment';
+import path from 'path';
 
 export const appointmentSchema = new mongoose.Schema({
   patientId: {
@@ -20,4 +20,13 @@ export const appointmentSchema = new mongoose.Schema({
     default: 'pending',
   },
   createdAt: { type: Date, default: Date.now },
+});
+
+appointmentSchema.pre(/^find/, function (this: any) {
+  this.populate([
+    {
+      path: 'patientId',
+      select: 'username email -appointments',
+    },
+  ]);
 });

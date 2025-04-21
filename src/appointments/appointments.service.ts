@@ -18,7 +18,6 @@ export class AppointmentsService {
   ) {}
   //finish
   async createAppointment(body: CreateAppointmentDto): Promise<Appointment> {
-    const appointment = await this.appointmentModel.create(body);
     const doctor = await this.usersService.findOne(body.doctorId);
     if (!doctor) throw new HttpException('Doctor not found', 404);
 
@@ -28,7 +27,21 @@ export class AppointmentsService {
     if (!isAvailable) {
       throw new HttpException('Doctor is not available on this Date', 403);
     }
+    //check is the patient is already have an appointment with this doctor
+    const isAlreadyHaveAppointment = doctor.appointments.find((appointment) => {
+      return appointment.patientId.toString() === body.patientId.toString();
+    });
 
+    if (isAlreadyHaveAppointment) {
+      throw new HttpException(
+        'You already have an appointment with this doctor',
+        403,
+      );
+    }
+
+    const appointment = await this.appointmentModel.create(body);
+    doctor.appointments.push(appointment._id);
+    await this.usersService.updateDoctorAppointment(doctor._id, doctor);
     return appointment;
   }
   //check if the appointment is in true data
@@ -85,6 +98,13 @@ export class AppointmentsService {
     if (!(appointment.doctorId.toString() === doctorId)) {
       throw new HttpException('this appointment not for you', 401);
     }
+    const doctor = await this.usersService.findOne(doctorId);
+
+    doctor.appointments = doctor.appointments.filter((appointment) => {
+      return appointment._id.toString() !== appointmentId;
+    });
+
+    await this.usersService.updateDoctorAppointment(doctorId, doctor);
     await this.appointmentModel.findByIdAndDelete(appointmentId);
     return;
   }
