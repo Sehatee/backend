@@ -1,3 +1,5 @@
+import { NotificationsModule } from './notifications/notifications.module';
+import { NotificationsService } from './notifications/notifications.service';
 import { MedicalRecordsModule } from './medicalRecords/medicalrecords.module';
 import { MedicalRecordsService } from './medicalRecords/medicalrecords.service';
 import { MedicalRecordsController } from './medicalRecords/medicalrecords.controller';
@@ -12,6 +14,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    NotificationsModule,
     // finish
     AppointmentsModule,
     ConfigModule.forRoot(),
@@ -23,6 +26,7 @@ import { ConfigModule } from '@nestjs/config';
     //finish
     AppointmentsModule,
     MedicalRecordsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

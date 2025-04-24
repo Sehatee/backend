@@ -9,14 +9,19 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UsersService } from 'src/users/users.service';
 import * as moment from 'moment';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { NotificationGateway } from 'src/notifications/gateway/notification.gateway';
 
 @Injectable()
 export class AppointmentsService {
   constructor(
     @Inject('APPOINTMENTS_MODEL') private appointmentModel: Model<Appointment>,
     private usersService: UsersService,
+    private notification: NotificationsService,
+    private notificationGateway: NotificationGateway,
   ) {}
   //finish
+
   async createAppointment(body: CreateAppointmentDto): Promise<Appointment> {
     const doctor = await this.usersService.findOne(body.doctorId);
     if (!doctor) throw new HttpException('Doctor not found', 404);
@@ -28,13 +33,18 @@ export class AppointmentsService {
       throw new HttpException('Doctor is not available on this Date', 403);
     }
     //check is the patient is already have an appointment with this doctor
-    const isAlreadyHaveAppointment = doctor.appointments.find((appointment) => {
-      return appointment.patientId.toString() === body.patientId.toString();
-    });
+    const isAlreadyHaveAppointmentOnOneTime = doctor.appointments.find(
+      (appointment) => {
+        return (
+          appointment.patientId.id === body.patientId &&
+          moment(appointment.date).format('YYYY-MM-DD') === body.date
+        );
+      },
+    );
 
-    if (isAlreadyHaveAppointment) {
+    if (isAlreadyHaveAppointmentOnOneTime) {
       throw new HttpException(
-        'You already have an appointment with this doctor',
+        `You already have an appointment with this doctor on this date ${body.date}`,
         403,
       );
     }
@@ -42,6 +52,23 @@ export class AppointmentsService {
     const appointment = await this.appointmentModel.create(body);
     doctor.appointments.push(appointment._id);
     await this.usersService.updateDoctorAppointment(doctor._id, doctor);
+
+    // patient
+    const patient = await this.usersService.findOne(body.patientId);
+
+    //create notification for the doctor
+    const notificaion = await this.notification.CreateNotification({
+      userId: doctor._id,
+      message: `You have a new appointment with ${patient.username} on ${moment(appointment.date).format('D MMMM')} `,
+      isRead: false,
+    });
+
+    // send the msg by socket
+    this.notificationGateway.handleSendNotificationToDoctor({
+      doctorId: doctor._id,
+      message: notificaion.message,
+    });
+
     return appointment;
   }
   //check if the appointment is in true data

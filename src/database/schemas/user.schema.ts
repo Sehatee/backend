@@ -54,7 +54,7 @@ userSchema.pre(/^find/, function (this: any) {
   this.populate([
     {
       path: 'appointments',
-      select: 'doctorId patientId',
+      select: 'doctorId patientId date',
     },
   ]);
 });
