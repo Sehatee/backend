@@ -31,6 +31,6 @@ import { ConfigModule } from '@nestjs/config';
     NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [UploadFilesService, AppService],
+  providers: [AppService],
 })
 export class AppModule {}
