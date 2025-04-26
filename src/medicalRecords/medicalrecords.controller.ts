@@ -7,13 +7,17 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpCode,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Patch,
   Post,
   Query,
   Request,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -25,11 +29,16 @@ import { RolesGuard } from 'src/auth/guards/Role.guard';
 import { Roles } from 'src/users/decorators/Roles.decorator';
 import { UpdateMedicalRecordDto } from './dto/update-medical.dto';
 import { AddDoctorIdInterceptor } from './interceptors/add-doctor-id.interceptor';
+import { UploadFilesService } from 'src/upload-files/upload-files.service';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('medicalRecords')
 @UseGuards(AuthGuard)
 export class MedicalRecordsController {
-  constructor(private readonly medicalRecordsService: MedicalRecordsService) {}
+  constructor(
+    private readonly medicalRecordsService: MedicalRecordsService,
+    private readonly uploadFilesService: UploadFilesService,
+  ) {}
   @Get()
   @UseGuards(RolesGuard)
   @Roles('admin')
@@ -54,11 +63,30 @@ export class MedicalRecordsController {
   @UseGuards(RolesGuard)
   @Roles('doctor')
   @UseInterceptors(AddDoctorIdInterceptor)
+  @UseInterceptors(FilesInterceptor('files'))
   async createMedicalRecord(
     // @Request() req: any,
-    @Body() body: CreateMedicalRecordDto,
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({
+            maxSize: 5000000,
+            message: 'File is too large must be less than 1MB',
+          }), // 5MB
+          new FileTypeValidator({
+            fileType:
+              /^image\/(jpeg|png|jpg|gif)$|^application\/(pdf|msword|vnd.openxmlformats-officedocument.wordprocessingml.document)$/, //accepte only images and pdf/word files
+          }),
+        ],
+      }),
+    )
+    files: Express.Multer.File[],
+    @Body()
+    body: CreateMedicalRecordDto,
   ): Promise<MedicalRecord> {
     // Extract the doctorId from the request object
+
+    body.attachments = await this.uploadFilesService.uploadFiles(files);
     return await this.medicalRecordsService.createMedicalRecord(body);
   }
   @Get('/:id')

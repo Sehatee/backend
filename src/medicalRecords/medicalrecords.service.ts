@@ -14,6 +14,7 @@ export class MedicalRecordsService {
   constructor(
     @Inject('MEDICAL_RECORDS_MODEL')
     private readonly medicalRecordModel: Model<MedicalRecord>,
+    
   ) {}
   //this action only for admin
   async getAllMedicalRecords(query: any): Promise<MedicalRecord[]> {

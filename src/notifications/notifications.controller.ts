@@ -8,10 +8,8 @@ import {
   Delete,
   Get,
   HttpCode,
-  Param,
   Request,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';

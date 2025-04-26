@@ -20,7 +20,6 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/Role.guard';
 import { Roles } from 'src/users/decorators/Roles.decorator';
 import { ResponseInterceptorAppointments } from './interceptors/res.interceptor';
-import { query } from 'express';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 
 @Controller('appointments')

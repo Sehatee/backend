@@ -1,3 +1,5 @@
+import { UploadFilesModule } from './upload-files/upload-files.module';
+import { UploadFilesService } from './upload-files/upload-files.service';
 import { NotificationsModule } from './notifications/notifications.module';
 import { NotificationsService } from './notifications/notifications.service';
 import { MedicalRecordsModule } from './medicalRecords/medicalrecords.module';
@@ -14,9 +16,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    NotificationsModule,
-    // finish
-    AppointmentsModule,
+    UploadFilesModule,
     ConfigModule.forRoot(),
     DatabaseModule,
     // finish
@@ -25,10 +25,12 @@ import { ConfigModule } from '@nestjs/config';
     UsersModule,
     //finish
     AppointmentsModule,
+    // finish
     MedicalRecordsModule,
+    // finish
     NotificationsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [UploadFilesService, AppService],
 })
 export class AppModule {}
