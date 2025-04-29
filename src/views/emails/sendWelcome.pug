@@ -1,0 +1,18 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        title Welcome Email
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    body(style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: sans-serif;")
+        div(style="max-width: 600px; margin: 40px auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);")
+            div(style="background-color: #0B62DE; color: white; text-align: center; padding: 30px;")
+                h1(style="font-size: 24px; margin: 0;") Welcome to Our Platform!
+            div(style="padding: 30px;")
+                p(style="color: #374151; font-size: 18px; margin-top: 0;") Hi #{username},
+                p(style="color: #4b5563; margin-top: 16px; font-size: 16px; line-height: 1.5;")
+                    | Thank you for signing up! We're excited to have you on board. Explore our platform and enjoy the amazing features we offer.
+                a(href="#" style="display: block; text-align: center; margin-top: 24px; background-color: #0B62DE; color: white; padding: 12px; border-radius: 6px; text-decoration: none; font-weight: bold;")
+                    | Get Started
+            div(style="text-align: center; color: #9ca3af; font-size: 12px; padding: 20px;")
+                | &copy; #{new Date().getFullYear()} Your Company. All rights reserved.

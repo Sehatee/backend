@@ -25,12 +25,14 @@ import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { LoginDto } from 'src/users/dto/login-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadFilesService } from 'src/upload-files/upload-files.service';
+import { EmailsService } from 'src/emails/emails.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private readonly uploadFilesService: UploadFilesService,
+    private readonly emailsService: EmailsService,
   ) {}
 
   @Post('/login')
@@ -55,6 +57,7 @@ export class AuthController {
     user: User,
   ) {
     user.picture = (await this.uploadFilesService.uploadFile(file)).secure_url;
+    await this.emailsService.sendWelcomEmail(user.email, user.username);
     return await this.authService.signUp(user);
   }
 

@@ -1,3 +1,4 @@
+import { EmailsModule } from './emails/emails.module';
 import { UploadFilesModule } from './upload-files/upload-files.module';
 import { UploadFilesService } from './upload-files/upload-files.service';
 import { NotificationsModule } from './notifications/notifications.module';
@@ -16,6 +17,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    EmailsModule,
     UploadFilesModule,
     ConfigModule.forRoot(),
     DatabaseModule,
