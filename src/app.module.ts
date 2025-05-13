@@ -1,3 +1,5 @@
+import { ReviewsModule } from './reviews/reviews.module';
+import { ReviewsController } from './reviews/reviews.controller';
 import { EmailsModule } from './emails/emails.module';
 import { UploadFilesModule } from './upload-files/upload-files.module';
 import { UploadFilesService } from './upload-files/upload-files.service';
@@ -17,9 +19,10 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+    ReviewsModule,
     EmailsModule,
     UploadFilesModule,
-    ConfigModule.forRoot(),
     DatabaseModule,
     // finish
     AuthModule,

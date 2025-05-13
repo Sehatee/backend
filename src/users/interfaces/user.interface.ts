@@ -1,3 +1,5 @@
+import { Review } from 'src/reviews/interfaces/review.interface';
+
 export interface User {
   _id: string;
   username: string;
@@ -12,6 +14,7 @@ export interface User {
   active: boolean;
   appointments: any[];
   availableHours: availableHours[];
+  reviews: Review[];
 }
 
 type Location = {

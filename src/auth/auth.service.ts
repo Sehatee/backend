@@ -16,6 +16,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
+
   async loginIn(body: LoginDto): Promise<{ token: string; user: User }> {
     const user = await this.usersService.findByEmail(body.email);
 
@@ -23,7 +24,9 @@ export class AuthService {
       throw new HttpException('User not found', 404);
     }
     if (user.active === false) {
-      throw new UnauthorizedException('User is inactive Please contact the administrator ');
+      throw new UnauthorizedException(
+        'User is inactive Please contact the administrator ',
+      );
     }
     const isPasswordValid = await bcrypt.compare(body.password, user.password);
     if (!isPasswordValid) {
@@ -44,15 +47,15 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
     const token = await this.jwtService.signAsync({ email: user.email });
-    
+
     return {
       token,
       user: await this.usersService.signUp(user),
     };
   }
 
-  async getMe(email: string): Promise<User> {
-    return await this.usersService.findByEmail(email);
+  async getMe(id: string): Promise<User> {
+    return await this.usersService.findOne(id); // TODO: handle how to add show the current use has loggdin
   }
   async updateMe(id: string, user: UpdateUserDto): Promise<User> {
     return await this.usersService.updateUser(id, user);

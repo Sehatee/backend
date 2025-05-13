@@ -44,6 +44,16 @@ export const userSchema = new mongoose.Schema({
     default: true,
     required: true,
   },
+  avgRatings: {
+    type: Number,
+    default: 4.5,
+  },
+  reviews: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Review',
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -56,6 +66,9 @@ userSchema.pre(/^find/, function (this: any) {
       path: 'appointments',
       select: 'doctorId patientId date',
     },
+    {
+      path: 'reviews',
+      select: 'patientId',
+    },
   ]);
 });
-

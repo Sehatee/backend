@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import path from 'path';
+
 
 export const appointmentSchema = new mongoose.Schema({
   patientId: {
