@@ -54,6 +54,9 @@ export class UpdateUserDto {
   phone: string;
   @IsString()
   @IsOptional()
+  description: string;
+  @IsString()
+  @IsOptional()
   picture: string;
   @IsString()
   @IsOptional()

@@ -2,12 +2,16 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpException,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -18,12 +22,18 @@ import { RolesGuard } from 'src/auth/guards/Role.guard';
 import { Roles } from './decorators/Roles.decorator';
 import { ResponseInterceptor } from './interceptors/res.interceptor';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { createUserDto } from './dto/create-user.dto';
+import { UploadFilesService } from 'src/upload-files/upload-files.service';
 
 @Controller('users')
 @UseInterceptors(ResponseInterceptor)
 @UseGuards(AuthGuard)
 export class UsersController {
-  constructor(private usersSrevice: UsersService) {}
+  constructor(
+    private usersSrevice: UsersService,
+    private readonly uploadFilesService: UploadFilesService,
+  ) {}
   @UseGuards(RolesGuard)
   @Roles('admin')
   @Get()
@@ -34,9 +44,32 @@ export class UsersController {
     return { resalut: users.users.length, users: users.users };
   }
   @UseGuards(RolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @Roles('admin')
   @Post('/create')
-  async createUser(@Body() user: User): Promise<User> {
+  async createUser(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000000 }), // 1MB
+          new FileTypeValidator({ fileType: /^image\/(jpeg|png|jpg)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Body() user: User,
+  ): Promise<User> {
+    user.picture = (await this.uploadFilesService.uploadFile(file)).secure_url;
+    user.active = true;
+    if (typeof user.location === 'string') {
+      try {
+        //@ts-expect-error : fix agine
+        user.location = JSON.parse(user.location.trim());
+      } catch (err) {
+        throw new HttpException('invalid location format', 400);
+      }
+    }
+    console.log('pricture', user.picture);
     return await this.usersSrevice.createUser(user);
   }
   @Get('/:id')

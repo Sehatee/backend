@@ -74,8 +74,12 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('/me')
   @HttpCode(HttpStatus.OK)
-  async me(@Request() req: any): Promise<User> {
-    return await this.authService.getMe(req.user.id);
+  async me(@Request() req: any): Promise<{
+    user: User;
+  }> {
+    return {
+      user: await this.authService.getMe(req.user.id),
+    };
   }
 
   @UseGuards(AuthGuard)

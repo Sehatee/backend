@@ -9,6 +9,10 @@ export const userSchema = new mongoose.Schema({
   phone: { type: String },
   picture: { type: String },
   specialization: { type: String }, // خاص بالأطباء فقط
+  description: {
+    type: String,
+    default: '', // خاص بالأطباء فقط
+  },
   appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' }],
   // ✅ إضافة جدول المواعيد المتاحة للأطباء
   availableHours: {

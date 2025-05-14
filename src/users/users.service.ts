@@ -3,6 +3,7 @@ import { Model } from 'mongoose';
 import { User } from './interfaces/user.interface';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { createUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -102,5 +103,22 @@ export class UsersService {
   // this only for doctor users
   async updateDoctorAppointment(id: string, doctor: User): Promise<User> {
     return await this.userModel.findByIdAndUpdate(id, doctor, { new: true });
+  }
+
+  async getAllDoctors(
+    specialization?: string,
+  ): Promise<{ resalut: number; doctors: User[] }> {
+    if (specialization === undefined) {
+      const doctors = await this.userModel.find({
+        role: 'doctor',
+      });
+      return { resalut: doctors.length, doctors };
+    }
+    const doctors = await this.userModel.find({
+      role: 'doctor',
+      specialization,
+    });
+
+    return { resalut: doctors.length, doctors };
   }
 }

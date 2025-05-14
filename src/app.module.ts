@@ -1,3 +1,5 @@
+import { DoctorsModule } from './doctors/doctors.module';
+import { DoctorsController } from './doctors/doctors.controller';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ReviewsController } from './reviews/reviews.controller';
 import { EmailsModule } from './emails/emails.module';
@@ -19,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    DoctorsModule,
     ConfigModule.forRoot(),
     ReviewsModule,
     EmailsModule,
