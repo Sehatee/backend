@@ -72,7 +72,7 @@ userSchema.pre(/^find/, function (this: any) {
     },
     {
       path: 'reviews',
-      select: 'patientId',
+      select: 'patientId content rating',
     },
   ]);
 });

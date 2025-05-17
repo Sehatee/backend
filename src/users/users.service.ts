@@ -107,14 +107,42 @@ export class UsersService {
 
   async getAllDoctors(
     specialization?: string,
+    query?: string,
   ): Promise<{ resalut: number; doctors: User[] }> {
-    if (specialization === undefined) {
+    // when not found specialization and query
+    if (specialization === undefined && query === undefined) {
       const doctors = await this.userModel.find({
         role: 'doctor',
       });
       return { resalut: doctors.length, doctors };
     }
+    // when not found specialization
+    if (specialization === undefined && query !== undefined) {
+      const doctors = await this.userModel.find({
+        $or: [
+          {
+            username: { $regex: query, $options: 'i' },
+          },
+        ],
+      });
+      return { resalut: doctors.length, doctors };
+    }
+    // when not found query
+    if (specialization !== undefined && query === undefined) {
+      const doctors = await this.userModel.find({
+        role: 'doctor',
+        specialization,
+      });
+
+      return { resalut: doctors.length, doctors };
+    }
+    // when specialization and query founds
     const doctors = await this.userModel.find({
+      $or: [
+        {
+          username: { $regex: query, $options: 'i' },
+        },
+      ],
       role: 'doctor',
       specialization,
     });

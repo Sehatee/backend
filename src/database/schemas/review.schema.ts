@@ -26,3 +26,12 @@ export const reviewsSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+reviewsSchema.pre(/^find/, function (this: any) {
+  this.populate([
+    {
+      path: 'patientId',
+      select: 'username picture ',
+    },
+  ]);
+});
