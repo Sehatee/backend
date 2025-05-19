@@ -21,12 +21,14 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    DoctorsModule,
     ConfigModule.forRoot(),
-    ReviewsModule,
-    EmailsModule,
-    UploadFilesModule,
     DatabaseModule,
+    UploadFilesModule,
+    EmailsModule,
+    // finish
+    DoctorsModule,
+    // finish
+    ReviewsModule,
     // finish
     AuthModule,
     // finish

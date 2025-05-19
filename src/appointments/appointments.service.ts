@@ -69,6 +69,9 @@ export class AppointmentsService {
       message: notificaion.message,
     });
 
+    // patient.appointments.push(appointment._id);
+    // await this.usersService.updatePatientAppointment(patient._id, patient); // error
+
     return appointment;
   }
   //check if the appointment is in true data

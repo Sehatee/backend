@@ -100,11 +100,14 @@ export class UsersService {
     };
   }
 
-  // this only for doctor users
+  // this only for doctors users
   async updateDoctorAppointment(id: string, doctor: User): Promise<User> {
     return await this.userModel.findByIdAndUpdate(id, doctor, { new: true });
   }
-
+  // this only for patients users
+  async updatePatientAppointment(id: string, patient: User): Promise<User> {
+    return await this.userModel.findByIdAndUpdate(id, patient, { new: true });
+  }
   async getAllDoctors(
     specialization?: string,
     query?: string,

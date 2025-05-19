@@ -14,7 +14,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import {
+  AppointmentStatus,
+  CreateAppointmentDto,
+} from './dto/create-appointment.dto';
 import { Appointment } from './interfaces/appointment.interface';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/Role.guard';
@@ -35,7 +38,8 @@ export class AppointmentsController {
     @Request() req: any,
   ): Promise<Appointment> {
     body.patientId = req.user.id;
-    body.status = 'pending';
+    body.status = AppointmentStatus.PENDING;
+    console.log('body', body);
 
     return await this.appointmentsService.createAppointment(body);
   }
@@ -67,6 +71,9 @@ export class AppointmentsController {
         await this.appointmentsService.getAllAppointmentsByDoctor(id),
     };
   }
+
+
+
   @Patch('/:id')
   @UseGuards(RolesGuard)
   @Roles('doctor')
