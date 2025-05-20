@@ -85,7 +85,10 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Patch('/me')
   @HttpCode(HttpStatus.OK)
-  async updateMe(@Body() user: UpdateUserDto, @Request() req): Promise<User> {
+  async updateMe(
+    @Body() user: UpdateUserDto,
+    @Request() req: any,
+  ): Promise<User> {
     return await this.authService.updateMe(req.user.id, user);
   }
   @UseGuards(AuthGuard)

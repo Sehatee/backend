@@ -18,9 +18,11 @@ import {
 
 export class Location {
   @IsString()
+  @IsOptional()
   type: string = 'Point'; // يجب أن يكون "Point" عند استخدام GeoJSON
 
   @IsArray()
+  @IsOptional()
   @ArrayMinSize(2)
   @ArrayMaxSize(2)
   @IsNumber({}, { each: true }) // التأكد من أن كل عنصر في المصفوفة رقم
@@ -29,6 +31,7 @@ export class Location {
   coordinates: number[];
 
   @IsString()
+  @IsOptional()
   address: string; // تصحيح الاسم من `addrss` إلى `address`
 }
 export class UpdateUserDto {
