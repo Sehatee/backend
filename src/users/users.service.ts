@@ -55,6 +55,16 @@ export class UsersService {
     const resultLimit = limit ? parseInt(limit, 10) : 10;
     const users = await this.userModel
       .find(filterObj)
+      .populate([
+        {
+          path: 'reviews',
+          select: 'patientId content rating',
+        },
+        {
+          path: 'appointments',
+          select: 'doctorId patientId date',
+        },
+      ])
       .sort(sortObj)
       .select(fieldsObj)
       .limit(resultLimit)
@@ -64,6 +74,16 @@ export class UsersService {
   async findOne(id: string): Promise<User> {
     return await this.userModel
       .findById(id)
+      .populate([
+        {
+          path: 'reviews',
+          select: 'patientId content rating',
+        },
+        {
+          path: 'appointments',
+          select: 'doctorId patientId date',
+        },
+      ])
       .select('-password -confirmPassword');
   }
   async updateUser(id: string, user: UpdateUserDto): Promise<User> {
@@ -81,7 +101,16 @@ export class UsersService {
     return await this.userModel.findByIdAndDelete(id);
   }
   async findByEmail(email: string): Promise<User> {
-    return await this.userModel.findOne({ email: email });
+    return await this.userModel.findOne({ email: email }).populate([
+      {
+        path: 'reviews',
+        select: 'patientId content rating',
+      },
+      {
+        path: 'appointments',
+        select: 'doctorId patientId date',
+      },
+    ]);
   }
 
   //change user.active to false
@@ -102,54 +131,64 @@ export class UsersService {
 
   // this only for doctors users
   async updateDoctorAppointment(id: string, doctor: User): Promise<User> {
-    return await this.userModel.findByIdAndUpdate(id, doctor, { new: true });
+    return await this.userModel
+      .findByIdAndUpdate(id, doctor, { new: true })
+      .populate([
+        {
+          path: 'reviews',
+          select: 'patientId content rating',
+        },
+        {
+          path: 'appointments',
+          select: 'doctorId patientId date',
+        },
+      ]);
   }
   // this only for patients users
   async updatePatientAppointment(id: string, patient: User): Promise<User> {
-    return await this.userModel.findByIdAndUpdate(id, patient, { new: true });
+    return await this.userModel
+      .findByIdAndUpdate(id, patient, { new: true })
+      .populate([
+        {
+          path: 'reviews',
+          select: 'patientId content rating',
+        },
+        {
+          path: 'appointments',
+          select: 'doctorId patientId date',
+        },
+      ]);
   }
+  
   async getAllDoctors(
     specialization?: string,
     query?: string,
   ): Promise<{ resalut: number; doctors: User[] }> {
-    // when not found specialization and query
-    if (specialization === undefined && query === undefined) {
-      const doctors = await this.userModel.find({
-        role: 'doctor',
-      });
-      return { resalut: doctors.length, doctors };
-    }
-    // when not found specialization
-    if (specialization === undefined && query !== undefined) {
-      const doctors = await this.userModel.find({
-        $or: [
-          {
-            username: { $regex: query, $options: 'i' },
-          },
-        ],
-      });
-      return { resalut: doctors.length, doctors };
-    }
-    // when not found query
-    if (specialization !== undefined && query === undefined) {
-      const doctors = await this.userModel.find({
-        role: 'doctor',
-        specialization,
-      });
+    const filter: any = { role: 'doctor' };
 
-      return { resalut: doctors.length, doctors };
+    if (specialization) {
+      filter.specialization = specialization;
     }
-    // when specialization and query founds
-    const doctors = await this.userModel.find({
-      $or: [
+
+    if (query) {
+      filter.username = { $regex: query, $options: 'i' };
+    }
+
+    const totalDoctors = await this.userModel.countDocuments(filter);
+    const doctors = await this.userModel
+      .find(filter)
+      .populate([
         {
-          username: { $regex: query, $options: 'i' },
+          path: 'reviews',
+          select: 'patientId content rating',
         },
-      ],
-      role: 'doctor',
-      specialization,
-    });
-
-    return { resalut: doctors.length, doctors };
+        {
+          path: 'appointments',
+          select: 'doctorId patientId date',
+        },
+      ])
+      .lean(); // استخدام lean لتقليل الذاكرة المستهلكة
+    console.log('done fetching doctors:', doctors.length);
+    return { resalut: totalDoctors, doctors };
   }
 }

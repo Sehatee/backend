@@ -64,15 +64,15 @@ export const userSchema = new mongoose.Schema({
 userSchema.pre('save', function () {
   this.confirmPassword = undefined;
 });
-userSchema.pre(/^find/, function (this: any) {
-  this.populate([
-    {
-      path: 'appointments',
-      select: 'doctorId patientId date',
-    },
-    {
-      path: 'reviews',
-      select: 'patientId content rating',
-    },
-  ]);
-});
+// userSchema.pre(/^find/, function (this: any) {
+//   this.populate([
+//     {
+//       path: 'appointments',
+//       select: 'doctorId patientId date',
+//     },
+//     {
+//       path: 'reviews',
+//       select: 'patientId content rating',
+//     },
+//   ]);
+// });

@@ -69,7 +69,14 @@ export class UsersController {
         throw new HttpException('invalid location format', 400);
       }
     }
-    console.log('pricture', user.picture);
+    if (typeof user.availableHours === 'string') {
+      try {
+        //@ts-expect-error : fix agine
+        user.availableHours = JSON.parse(user.availableHours.trim());
+      } catch (err) {
+        throw new HttpException('invalid availableHours format', 400);
+      }
+    }
     return await this.usersSrevice.createUser(user);
   }
   @Get('/:id')
