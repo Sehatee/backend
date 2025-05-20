@@ -39,6 +39,30 @@ export class MedicalRecordsController {
     private readonly medicalRecordsService: MedicalRecordsService,
     private readonly uploadFilesService: UploadFilesService,
   ) {}
+
+  // only for patient
+  @Get('/patient')
+  @UseGuards(RolesGuard)
+  @Roles('patient')
+  async getMedicalRecordsByPatient(@Request() req: any): Promise<{
+    data: MedicalRecord[];
+    total: number;
+    // page: number;
+    // limit: number; for after time
+  }> {
+    const patientId = req.user.id;
+
+    return await this.medicalRecordsService
+      .getMedicalRecordsByPatient(patientId)
+      .then((data) => {
+        return {
+          total: data.length,
+          data: data,
+          // page: query.page ? parseInt(query.page) : 1,
+          // limit: query.limit ? parseInt(query.limit) : 10, for after time
+        };
+      });
+  }
   @Get()
   @UseGuards(RolesGuard)
   @Roles('admin')

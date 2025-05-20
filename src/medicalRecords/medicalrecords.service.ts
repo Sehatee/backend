@@ -14,7 +14,6 @@ export class MedicalRecordsService {
   constructor(
     @Inject('MEDICAL_RECORDS_MODEL')
     private readonly medicalRecordModel: Model<MedicalRecord>,
-    
   ) {}
   //this action only for admin
   async getAllMedicalRecords(query: any): Promise<MedicalRecord[]> {
@@ -29,7 +28,6 @@ export class MedicalRecordsService {
   async createMedicalRecord(
     medicalRecord: CreateMedicalRecordDto,
   ): Promise<MedicalRecord> {
-    
     const newMedicalRecord = this.medicalRecordModel.create(medicalRecord);
     return newMedicalRecord;
   }
@@ -46,6 +44,13 @@ export class MedicalRecordsService {
       ]);
 
     return doctorMedicalRecords;
+  }
+  async getMedicalRecordsByPatient(id: string): Promise<MedicalRecord[]> {
+    const patientMedicalRecords = await this.medicalRecordModel
+      .find({
+        patientId: id,
+      })
+    return patientMedicalRecords;
   }
   async updateMedicalRecord(
     body: UpdateMedicalRecordDto,

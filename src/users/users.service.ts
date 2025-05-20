@@ -95,6 +95,16 @@ export class UsersService {
     }
     return await this.userModel
       .findByIdAndUpdate(id, user, { new: true })
+      .populate([
+        {
+          path: 'reviews',
+          select: 'patientId content rating',
+        },
+        {
+          path: 'appointments',
+          select: 'doctorId patientId date',
+        },
+      ])
       .select('-password -confirmPassword');
   }
   async deleteUser(id: string): Promise<void> {
@@ -159,7 +169,7 @@ export class UsersService {
         },
       ]);
   }
-  
+
   async getAllDoctors(
     specialization?: string,
     query?: string,

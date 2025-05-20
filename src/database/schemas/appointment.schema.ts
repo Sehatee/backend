@@ -1,6 +1,5 @@
 import * as mongoose from 'mongoose';
 
-
 export const appointmentSchema = new mongoose.Schema({
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -26,7 +25,7 @@ appointmentSchema.pre(/^find/, function (this: any) {
   this.populate([
     {
       path: 'patientId',
-      select: 'username email -appointments',
+      select: 'username email ',
     },
   ]);
 });

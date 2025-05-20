@@ -159,4 +159,16 @@ export class AppointmentsService {
     });
     return doctorAppointments;
   }
+  async getAllAppointmentsByPatient(id: string): Promise<Appointment[]> {
+    const patientAppointments = await this.appointmentModel
+      .find({
+        patientId: id,
+      })
+      .populate([{
+        path:'doctorId',
+        select:'username email specialization'
+      }]); 
+    console.log(patientAppointments);
+    return patientAppointments;
+  }
 }

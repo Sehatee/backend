@@ -30,6 +30,23 @@ import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 @UseGuards(AuthGuard)
 export class AppointmentsController {
   constructor(private appointmentsService: AppointmentsService) {}
+
+  // only for patinet
+  @Get('/patient')
+  @UseGuards(RolesGuard)
+  @Roles('patient')
+  async getAllAppointmentsByPatient(@Request() req: any): Promise<{
+    total: number;
+    appointments: Appointment[];
+  }> {
+    const id = req.user.id;
+    return {
+      total: (await this.appointmentsService.getAllAppointmentsByPatient(id))
+        .length,
+      appointments:
+        await this.appointmentsService.getAllAppointmentsByPatient(id),
+    };
+  }
   @Post()
   @UseGuards(RolesGuard)
   @Roles('patient')
@@ -71,8 +88,6 @@ export class AppointmentsController {
         await this.appointmentsService.getAllAppointmentsByDoctor(id),
     };
   }
-
-
 
   @Patch('/:id')
   @UseGuards(RolesGuard)

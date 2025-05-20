@@ -26,12 +26,21 @@ export class ReviewsService {
     doctorId: string,
     reviewData: CreateReviewDto,
   ): Promise<Review> {
-    const doctor = await this.userModel.findById(doctorId);
+    const doctor = await this.userModel.findById(doctorId).populate([
+      {
+        path: 'reviews',
+        select: 'patientId content rating',
+      },
+      {
+        path: 'appointments',
+        select: 'doctorId patientId date',
+      },
+    ]);
     if (!doctor) {
       throw new HttpException('Doctor not found', 404);
     }
     const isReviewed = doctor.reviews.some((review) => {
-      return review.patientId.toString() === reviewData.patientId;
+      return review.patientId._id.toString() === reviewData.patientId;
     });
 
     if (isReviewed) {
