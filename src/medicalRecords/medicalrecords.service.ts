@@ -50,6 +50,12 @@ export class MedicalRecordsService {
       .find({
         patientId: id,
       })
+      .populate([
+        {
+          path: 'doctorId',
+          select: 'username email specialization',
+        },
+      ]);
     return patientMedicalRecords;
   }
   async updateMedicalRecord(

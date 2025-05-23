@@ -164,11 +164,23 @@ export class AppointmentsService {
       .find({
         patientId: id,
       })
-      .populate([{
-        path:'doctorId',
-        select:'username email specialization'
-      }]); 
+      .populate([
+        {
+          path: 'doctorId',
+          select: 'username email specialization',
+        },
+      ]);
     console.log(patientAppointments);
     return patientAppointments;
+  }
+  async getAllAppointmentsByAdmin(): Promise<Appointment[]> {
+    const allAppointments = await this.appointmentModel.find().populate([
+      {
+        path: 'doctorId',
+        select: 'username',
+      },
+    ]);
+
+    return allAppointments;
   }
 }

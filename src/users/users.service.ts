@@ -52,7 +52,7 @@ export class UsersService {
     if (fields) {
       fieldsObj = fields.split(',').join(' '); // `username,email` إلى `username email`
     }
-    const resultLimit = limit ? parseInt(limit, 10) : 10;
+    const resultLimit = limit ? parseInt(limit, 10) : 0;
     const users = await this.userModel
       .find(filterObj)
       .populate([
@@ -174,7 +174,7 @@ export class UsersService {
     specialization?: string,
     query?: string,
   ): Promise<{ resalut: number; doctors: User[] }> {
-    const filter: any = { role: 'doctor' };
+    const filter: any = { role: 'doctor', active: true };
 
     if (specialization) {
       filter.specialization = specialization;
