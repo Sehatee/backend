@@ -113,17 +113,18 @@ export class MedicalRecordsController {
     body.attachments = await this.uploadFilesService.uploadFiles(files);
     return await this.medicalRecordsService.createMedicalRecord(body);
   }
-  @Get('/:id')
+  @Get('/doctor')
   @UseGuards(RolesGuard)
   @Roles('doctor')
-  async getMedicalRecordsByDoctor(@Param() params: { id: string }): Promise<{
+  async getMedicalRecordsByDoctor(@Request() req: any): Promise<{
     data: MedicalRecord[];
     total: number;
     // page: number;
     // limit: number; for after time
   }> {
+    const doctorId = req.user.id;
     return await this.medicalRecordsService
-      .getMedicalRecordsByDoctor(params.id)
+      .getMedicalRecordsByDoctor(doctorId)
       .then((data) => {
         return {
           total: data.length,

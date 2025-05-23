@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -33,6 +35,40 @@ export class ReviewsController {
   ): Promise<Review> {
     return await this.reviewServices.createReview(doctorId, reviewData);
   }
+
+  @Roles('patient')
+  @UseGuards(RolesGuard)
+  @Patch('/:id')
+  async updateReview(
+    @Param()
+    params: {
+      id: string;
+    },
+    @Body() reviewData: Partial<Review>,
+    @Request() req: any,
+  ): Promise<Review> {
+    const userId = req.user.id;
+    return await this.reviewServices.updateReview(
+      userId,
+      params.id,
+      reviewData,
+    );
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles('patient')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/:id')
+  async deleteReview(
+    @Param()
+    params: {
+      id: string;
+    },
+    @Request() req: any,
+  ): Promise<void> {
+    const userId = req.user.id;
+    return await this.reviewServices.deleteReview(userId, params.id);
+  }
   @UseGuards(RolesGuard)
   @Roles('admin')
   @Get()
@@ -44,27 +80,7 @@ export class ReviewsController {
   async getReviewById(@Param('id') id: string): Promise<Review> {
     return await this.reviewServices.getReviewById(id);
   }
-  @UseGuards(RolesGuard)
-  @Roles('patient')
-  @Patch(':id')
-  async updateReview(
-    @Param('reviewId') reviewId: string,
-    @Body() reviewData: Partial<Review>,
-    @Request() req: any,
-  ): Promise<Review> {
-    const userId = req.user.id;
-    return await this.reviewServices.updateReview(userId, reviewId, reviewData);
-  }
-  @UseGuards(RolesGuard)
-  @Roles('patient')
-  @Delete(':id')
-  async deleteReview(
-    @Param('reviewId') reviewId: string,
-    @Request() req: any,
-  ): Promise<void> {
-    const userId = req.user.id;
-    return await this.reviewServices.deleteReview(userId, reviewId);
-  }
+
   @UseGuards(RolesGuard)
   @Roles('doctor')
   @Get('doctor/:doctorId')

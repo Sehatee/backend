@@ -1,3 +1,4 @@
+import { min } from 'class-validator';
 import * as mongoose from 'mongoose';
 
 export const reviewsSchema = new mongoose.Schema(

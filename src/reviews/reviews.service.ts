@@ -12,6 +12,7 @@ import { Model } from 'mongoose';
 import { Review } from './interfaces/review.interface';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { User } from 'src/users/interfaces/user.interface';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ReviewsService {
@@ -20,6 +21,7 @@ export class ReviewsService {
     private readonly reviewModel: Model<Review>,
     @Inject('USERS_MODEL')
     private readonly userModel: Model<User>,
+    private readonly usersService: UsersService,
   ) {}
   //finish
   async createReview(
@@ -51,6 +53,13 @@ export class ReviewsService {
     await doctor.save({
       validateBeforeSave: false,
     });
+    const patient = await this.userModel.findById(reviewData.patientId);
+    if (!patient) {
+      throw new HttpException('Patient not found', 404);
+    }
+    patient.reviews.push(review.id);
+    await this.usersService.updatePatientAppointment(patient._id, patient);
+
     return review;
   }
   //finish
@@ -89,16 +98,16 @@ export class ReviewsService {
     const updatedReview = await this.reviewModel.findByIdAndUpdate(
       reviewId,
       reviewData,
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     );
 
     if (!updatedReview) {
       throw new NotFoundException('Review not found');
     }
-    user.reviews = user.reviews.filter((review) => {
-      return review._id.toString() !== reviewId;
-    });
-    await user.save();
+
     return updatedReview;
   }
 
@@ -111,20 +120,23 @@ export class ReviewsService {
     const isExist = user.reviews.find(
       (review) => review._id.toString() === reviewId,
     );
+    console.log(user.reviews)
     if (!isExist) {
       throw new HttpException(
         ' user does not have permission to update this review',
         403,
       );
     }
-    const result = await this.reviewModel.findByIdAndDelete(reviewId).exec();
+    const result = await this.reviewModel.findByIdAndDelete(reviewId);
     if (!result) {
       throw new NotFoundException('Review not found');
     }
     user.reviews = user.reviews.filter((review) => {
       return review._id.toString() !== reviewId;
     });
-    await user.save();
+    await user.save({
+      validateBeforeSave: false,
+    });
     return;
   }
 

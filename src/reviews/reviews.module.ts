@@ -8,9 +8,10 @@ https://docs.nestjs.com/modules
 import { Module } from '@nestjs/common';
 import { reviewsProviders } from './provider/reviews.provider';
 import { usersProviders } from 'src/users/provider/users.provider';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, UsersModule],
   controllers: [ReviewsController],
   providers: [...reviewsProviders, ...usersProviders, ReviewsService],
 })
