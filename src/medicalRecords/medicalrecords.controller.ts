@@ -41,6 +41,19 @@ export class MedicalRecordsController {
   ) {}
 
   // only for patient
+  @Get('/patient/:id')
+  @UseGuards(RolesGuard)
+  @Roles('patient')
+  async getOneMedicalRecordByPatient(
+    @Param()
+    params: {
+      id: string;
+    },
+  ): Promise<MedicalRecord> {
+    return await this.medicalRecordsService.getMedicalOneRecordsByPatient(
+      params.id,
+    );
+  }
   @Get('/patient')
   @UseGuards(RolesGuard)
   @Roles('patient')
@@ -63,6 +76,7 @@ export class MedicalRecordsController {
         };
       });
   }
+
   @Get()
   @UseGuards(RolesGuard)
   @Roles('admin')
@@ -152,6 +166,19 @@ export class MedicalRecordsController {
       body,
       params.id,
       doctorId,
+    );
+  }
+  @Get('/:id')
+  @UseGuards(RolesGuard)
+  @Roles('doctor')
+  async getOneMedicalRecordByDoctor(
+    @Param()
+    params: {
+      id: string;
+    },
+  ): Promise<MedicalRecord> {
+    return await this.medicalRecordsService.getMedicalOneRecordsByDoctor(
+      params.id,
     );
   }
 

@@ -8,6 +8,7 @@ import { Model } from 'mongoose';
 import { CreateMedicalRecordDto } from './dto/create-medical.dto';
 import APIFeatures from 'src/utils/apiFeaturs';
 import { UpdateMedicalRecordDto } from './dto/update-medical.dto';
+import { create } from 'domain';
 
 @Injectable()
 export class MedicalRecordsService {
@@ -39,9 +40,12 @@ export class MedicalRecordsService {
       .populate([
         {
           path: 'patientId',
-          select: 'username email ',
+          select: 'username email phone picture',
         },
-      ]);
+      ])
+      .sort({
+        createdAt: -1, // -1 for newest first
+      });
 
     return doctorMedicalRecords;
   }
@@ -55,7 +59,42 @@ export class MedicalRecordsService {
           path: 'doctorId',
           select: 'username email specialization',
         },
+      ])
+      .sort({
+        createdAt: -1, // -1 for newest first
+      });
+    return patientMedicalRecords;
+  }
+  async getMedicalOneRecordsByDoctor(id: string): Promise<MedicalRecord> {
+    const doctorMedicalRecords = await this.medicalRecordModel
+      .findById(id)
+      .populate([
+        {
+          path: 'patientId',
+          select: 'username email specialization picture',
+        },
       ]);
+
+    if (!doctorMedicalRecords) {
+      throw new HttpException('not found this medical Record', 404);
+    }
+
+    return doctorMedicalRecords;
+  }
+  async getMedicalOneRecordsByPatient(id: string): Promise<MedicalRecord> {
+    const patientMedicalRecords = await this.medicalRecordModel
+      .findById(id)
+      .populate([
+        {
+          path: 'doctorId',
+          select: 'username email specialization picture',
+        },
+      ]);
+
+    if (!patientMedicalRecords) {
+      throw new HttpException('not found this medical Record', 404);
+    }
+
     return patientMedicalRecords;
   }
   async updateMedicalRecord(
