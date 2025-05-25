@@ -81,7 +81,7 @@ export class UsersService {
       .populate([
         {
           path: 'reviews',
-          select: 'patientId content rating',
+          select: 'patientId content rating createdAt updatedAt',
         },
         {
           path: 'appointments',
