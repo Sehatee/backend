@@ -48,10 +48,10 @@ export class AuthService {
     user.password = hashedPassword;
     user.role = 'patient';
     const token = await this.jwtService.signAsync({ email: user.email });
-
+    const newUser = await this.usersService.signUp(user);
     return {
       token,
-      user: await this.usersService.signUp(user),
+      user: newUser,
     };
   }
 
@@ -74,10 +74,9 @@ export class AuthService {
   ): Promise<{
     user: User;
     message: string;
-    
   }> {
     const user = await this.usersService.getUserPassword(userId);
-    
+
     const isPasswordValid = await bcrypt.compare(
       body.oldPassword,
       user.password,
@@ -90,14 +89,12 @@ export class AuthService {
     }
     const newHashedPassword = await bcrypt.hash(body.newPassword, 10);
 
-    
     return {
       user: await this.usersService.changeUserPassword(
         user._id,
         newHashedPassword,
       ),
       message: 'Password changed successfully',
-     
     };
   }
 }
