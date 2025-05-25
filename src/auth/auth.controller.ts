@@ -11,6 +11,7 @@ import {
   ParseFilePipe,
   Patch,
   Post,
+  Put,
   Request,
   UploadedFile,
   UseGuards,
@@ -37,10 +38,7 @@ export class AuthController {
 
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login(
-    @Body() body: LoginDto,
-  
-  ): Promise<{ token: string; user: User }> {
+  async login(@Body() body: LoginDto): Promise<{ token: string; user: User }> {
     return await this.authService.loginIn(body);
   }
   @Post('signup')
@@ -58,7 +56,6 @@ export class AuthController {
     file: Express.Multer.File,
     @Body()
     user: User,
-    
   ) {
     user.picture = (await this.uploadFilesService.uploadFile(file)).secure_url;
     await this.emailsService.sendWelcomEmail(user.email, user.username);
@@ -100,5 +97,23 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteMe(@Request() req): Promise<{ message: string }> {
     return await this.authService.deleteMe(req.user.id);
+  }
+  @UseGuards(AuthGuard)
+  @Put('/me/password')
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Request() req,
+    @Body()
+    body: {
+      oldPassword: string;
+      newPassword: string;
+      confirmPassword: string;
+    },
+  ): Promise<{
+    message: string;
+    user: User;
+    token: string;
+  }> {
+    return await this.authService.changePassword(body, req.user.id);
   }
 }

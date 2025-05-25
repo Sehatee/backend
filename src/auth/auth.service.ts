@@ -64,4 +64,40 @@ export class AuthService {
   async deleteMe(id: string): Promise<{ message: string }> {
     return await this.usersService.deleteMe(id);
   }
+  async changePassword(
+    body: {
+      oldPassword: string;
+      newPassword: string;
+      confirmPassword: string;
+    },
+    userId: string,
+  ): Promise<{
+    user: User;
+    message: string;
+    token: string;
+  }> {
+    const user = await this.usersService.getUserPassword(userId);
+    
+    const isPasswordValid = await bcrypt.compare(
+      body.oldPassword,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid password');
+    }
+    if (body.newPassword !== body.confirmPassword) {
+      throw new HttpException('Passwords do not match', 400);
+    }
+    const newHashedPassword = await bcrypt.hash(body.newPassword, 10);
+
+    const token = await this.jwtService.signAsync({ email: user.email });
+    return {
+      user: await this.usersService.changeUserPassword(
+        user._id,
+        newHashedPassword,
+      ),
+      message: 'Password changed successfully',
+      token,
+    };
+  }
 }

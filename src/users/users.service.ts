@@ -201,4 +201,22 @@ export class UsersService {
     console.log('done fetching doctors:', doctors.length);
     return { resalut: totalDoctors, doctors };
   }
+  async changeUserPassword(id: string, newPassword: string): Promise<User> {
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+    return await this.userModel
+      .findByIdAndUpdate(id, {
+        password: newPassword,
+      })
+      .select('-password -confirmPassword');
+  }
+  async getUserPassword(id: string): Promise<User> {
+    const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+    return user;
+  }
 }

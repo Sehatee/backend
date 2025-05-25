@@ -154,9 +154,13 @@ export class AppointmentsService {
     return appointment;
   }
   async getAllAppointmentsByDoctor(id: string): Promise<Appointment[]> {
-    const doctorAppointments = await this.appointmentModel.find({
-      doctorId: id,
-    });
+    const doctorAppointments = await this.appointmentModel
+      .find({
+        doctorId: id,
+      })
+      .sort({
+        createdAt: -1, // -1 for newest first
+      });
     return doctorAppointments;
   }
   async getAllAppointmentsByPatient(id: string): Promise<Appointment[]> {
@@ -169,7 +173,10 @@ export class AppointmentsService {
           path: 'doctorId',
           select: 'username email specialization',
         },
-      ]);
+      ])
+      .sort({
+        createdAt: -1, // -1 for newest first
+      });
     console.log(patientAppointments);
     return patientAppointments;
   }
