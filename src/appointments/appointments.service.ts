@@ -186,6 +186,10 @@ export class AppointmentsService {
         path: 'doctorId',
         select: 'username',
       },
+      {
+        path: 'patientId',
+        select: 'username email',
+      },
     ]);
 
     return allAppointments;
