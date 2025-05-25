@@ -48,7 +48,17 @@ export class ReviewsService {
     if (isReviewed) {
       throw new HttpException('user has already reviewed this doctor', 403);
     }
-    const review = await this.reviewModel.create(reviewData);
+    const review = await this.reviewModel
+      .create(reviewData)
+      .then(async (review) => {
+        const newReview = await this.reviewModel.findById(review._id).populate([
+          {
+            path: 'patientId',
+            select: 'username email picture',
+          },
+        ]);
+        return newReview;
+      });
     doctor.reviews.push(review.id);
     await doctor.save({
       validateBeforeSave: false,
@@ -120,7 +130,7 @@ export class ReviewsService {
     const isExist = user.reviews.find(
       (review) => review._id.toString() === reviewId,
     );
-    console.log(user.reviews)
+    console.log(user.reviews);
     if (!isExist) {
       throw new HttpException(
         ' user does not have permission to update this review',
