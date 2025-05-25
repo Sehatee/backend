@@ -112,7 +112,6 @@ export class AuthController {
   ): Promise<{
     message: string;
     user: User;
-    token: string;
   }> {
     return await this.authService.changePassword(body, req.user.id);
   }

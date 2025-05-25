@@ -74,7 +74,7 @@ export class AuthService {
   ): Promise<{
     user: User;
     message: string;
-    token: string;
+    
   }> {
     const user = await this.usersService.getUserPassword(userId);
     
@@ -90,14 +90,14 @@ export class AuthService {
     }
     const newHashedPassword = await bcrypt.hash(body.newPassword, 10);
 
-    const token = await this.jwtService.signAsync({ email: user.email });
+    
     return {
       user: await this.usersService.changeUserPassword(
         user._id,
         newHashedPassword,
       ),
       message: 'Password changed successfully',
-      token,
+     
     };
   }
 }
