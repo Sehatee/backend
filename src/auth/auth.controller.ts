@@ -12,6 +12,7 @@ import {
   Patch,
   Post,
   Request,
+  Response,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -26,6 +27,7 @@ import { LoginDto } from 'src/users/dto/login-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadFilesService } from 'src/upload-files/upload-files.service';
 import { EmailsService } from 'src/emails/emails.service';
+import { Response as ResponseType } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -37,8 +39,11 @@ export class AuthController {
 
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() body: LoginDto): Promise<{ token: string; user: User }> {
-    return await this.authService.loginIn(body);
+  async login(
+    @Body() body: LoginDto,
+    @Response() res: ResponseType,
+  ): Promise<{ token: string; user: User }> {
+    return await this.authService.loginIn(body, res);
   }
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
@@ -55,10 +60,11 @@ export class AuthController {
     file: Express.Multer.File,
     @Body()
     user: User,
+    @Response() res: ResponseType,
   ) {
     user.picture = (await this.uploadFilesService.uploadFile(file)).secure_url;
     await this.emailsService.sendWelcomEmail(user.email, user.username);
-    return await this.authService.signUp(user);
+    return await this.authService.signUp(user, res);
   }
 
   @Post('forgot-password')
