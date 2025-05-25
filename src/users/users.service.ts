@@ -29,7 +29,11 @@ export class UsersService {
     // if (user.role !== 'patient') {
     //   throw new HttpException('Invalid role', 400);
     // } // إنزع التعليق في حالة الProd
-    return await this.userModel.create(user);
+    return await this.userModel.create(user).then((createdUser) => {
+      return this.userModel
+        .findById(createdUser._id)
+        .select('-password -confirmPassword');
+    });
   }
   async findAll(query?: any): Promise<{ resalut: number; users: User[] }> {
     const { filter, sort, limit, fields } = query;
