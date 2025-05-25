@@ -57,7 +57,7 @@ export class MedicalRecordsService {
       .populate([
         {
           path: 'doctorId',
-          select: 'username email specialization',
+          select: 'username email specialization ,picture',
         },
       ])
       .sort({
