@@ -102,7 +102,7 @@ export class AuthController {
   ): Promise<User> {
     user.picture =
       (await this.uploadFilesService.uploadFile(file)).secure_url ||
-      req.user.picture;
+      user.picture;
     return await this.authService.updateMe(req.user.id, user);
   }
   @UseGuards(AuthGuard)
