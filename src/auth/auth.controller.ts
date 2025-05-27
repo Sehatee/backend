@@ -84,12 +84,23 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @Patch('/me')
   @HttpCode(HttpStatus.OK)
   async updateMe(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000000 }), // 1MB
+          new FileTypeValidator({ fileType: /^image\/(jpeg|png|jpg)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
     @Body() user: UpdateUserDto,
     @Request() req: any,
   ): Promise<User> {
+    user.picture = (await this.uploadFilesService.uploadFile(file)).secure_url;
     return await this.authService.updateMe(req.user.id, user);
   }
   @UseGuards(AuthGuard)
