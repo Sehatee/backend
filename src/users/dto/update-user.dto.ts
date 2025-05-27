@@ -67,8 +67,7 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   specialization: string; // ? only if user is doctor
-  @ValidateNested()
-  @Type(() => Location)
+  @IsOptional()
   location: Location;
   @IsBoolean()
   @IsOptional()
