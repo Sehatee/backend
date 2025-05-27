@@ -100,7 +100,9 @@ export class AuthController {
     @Body() user: UpdateUserDto,
     @Request() req: any,
   ): Promise<User> {
-    user.picture = (await this.uploadFilesService.uploadFile(file)).secure_url;
+    user.picture =
+      (await this.uploadFilesService.uploadFile(file)).secure_url ||
+      req.user.picture;
     return await this.authService.updateMe(req.user.id, user);
   }
   @UseGuards(AuthGuard)
