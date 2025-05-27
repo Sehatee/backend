@@ -5,6 +5,7 @@ import {
   FileTypeValidator,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   MaxFileSizeValidator,
   Param,
@@ -105,6 +106,22 @@ export class AuthController {
       user.picture = (
         await this.uploadFilesService.uploadFile(file)
       ).secure_url;
+    }
+    if (typeof user.location === 'string') {
+      try {
+        //@ts-expect-error : fix agine
+        user.location = JSON.parse(user.location.trim());
+      } catch (err) {
+        throw new HttpException('invalid location format', 400);
+      }
+    }
+    if (typeof user.availableHours === 'string') {
+      try {
+        //@ts-expect-error : fix agine
+        user.availableHours = JSON.parse(user.availableHours.trim());
+      } catch (err) {
+        throw new HttpException('invalid availableHours format', 400);
+      }
     }
     return await this.authService.updateMe(req.user.id, user);
   }

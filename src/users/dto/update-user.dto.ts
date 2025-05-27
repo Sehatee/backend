@@ -16,6 +16,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 
+type availableHours = {
+  day: string;
+};
 export class Location {
   @IsString()
   @IsOptional()
@@ -70,4 +73,6 @@ export class UpdateUserDto {
   @IsBoolean()
   @IsOptional()
   active: boolean;
+  @IsOptional()
+  availableHours: availableHours[];
 }
