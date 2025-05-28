@@ -41,14 +41,15 @@ async function bootstrap() {
     },
   });
 
-  app.use('/api/v1/auth/login', strictLimiter);
-  app.use('/api/v1/auth/register', strictLimiter);
-  app.use('/api/v1/auth/forgot-password', strictLimiter);
   app.use(limiter);
   app.setGlobalPrefix('/api/v1');
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: ['http://localhost:3000', 'https://www.sehatte.com'],
+    origin: [
+      'http://localhost:3000',
+      'https://www.sehatte.com',
+      'https://sehatte.com',
+    ],
     credentials: true,
   });
 
