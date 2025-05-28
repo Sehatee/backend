@@ -45,9 +45,18 @@ async function bootstrap() {
   app.setGlobalPrefix('/api/v1');
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: ['www.sehatte.com', 'sehatte.com', 'localhost:3000'],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        'https://www.sehatte.com',
+        'https://sehatte.com',
+        'http://localhost:3000',
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 
