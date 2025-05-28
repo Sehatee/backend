@@ -50,7 +50,6 @@ async function bootstrap() {
       'https://www.sehatte.com',
       'https://sehatte.com',
     ],
-    credentials: true,
   });
 
   await app.listen(process.env.PORT ?? 4000);
