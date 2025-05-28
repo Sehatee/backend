@@ -45,7 +45,10 @@ async function bootstrap() {
   app.setGlobalPrefix('/api/v1');
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    origin: ['*'],
+    origin: ['www.sehatte.com', 'sehatte.com', 'localhost:3000'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    
+    credentials: true,
   });
 
   await app.listen(process.env.PORT ?? 4000);
