@@ -5,6 +5,22 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        'https://www.sehatte.com',
+        'https://sehatte.com',
+        'http://localhost:3000',
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  });
+
   // Security Headers
   app.use(
     helmet({
@@ -24,41 +40,26 @@ async function bootstrap() {
     }),
   );
   // Rate Limiting
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-    message: {
-      error: 'Too many requests from this IP, please try again later.',
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-  });
-  const strictLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // limit each IP to 5 requests per windowMs for sensitive endpoints
-    message: {
-      error: 'Too many attempts, please try again later.',
-    },
-  });
+  // const limiter = rateLimit({
+  //   windowMs: 15 * 60 * 1000, // 15 minutes
+  //   max: 100, // limit each IP to 100 requests per windowMs
+  //   message: {
+  //     error: 'Too many requests from this IP, please try again later.',
+  //   },
+  //   standardHeaders: true,
+  //   legacyHeaders: false,
+  // });
+  // const strictLimiter = rateLimit({
+  //   windowMs: 15 * 60 * 1000, // 15 minutes
+  //   max: 5, // limit each IP to 5 requests per windowMs for sensitive endpoints
+  //   message: {
+  //     error: 'Too many attempts, please try again later.',
+  //   },
+  // });
 
-  app.use(limiter);
+  // app.use(limiter);
   app.setGlobalPrefix('/api/v1');
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        'https://www.sehatte.com',
-        'https://sehatte.com',
-        'http://localhost:3000',
-      ];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  });
 
   await app.listen(process.env.PORT ?? 4000);
 }
