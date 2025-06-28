@@ -2,15 +2,15 @@ FROM node:20.15.1
 
 WORKDIR /app
 
-# نسخ ملفات الحزم فقط أولاً للاستفادة من الـ cache
+# good practice : for add cache
 COPY package.json package-lock.json ./
 
-# تثبيت سريع ودقيق باستخدام npm ci
+# npm ci fast and more reliable
 RUN npm ci
 
-# الآن انسخ باقي الملفات
+# copy all files
 COPY . .
 
 EXPOSE 4000
-
+# start the application ind development mode , in production mode use npm run start:prod
 CMD ["npm", "run", "start:dev"]

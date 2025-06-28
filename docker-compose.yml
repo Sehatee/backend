@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+  # main container for the Hagiz API application
   hagiz_app:
     container_name: hagiz_api
     build: .
@@ -8,6 +9,7 @@ services:
       - '4000:4000'
     env_file:
       - ./.env
+  # MongoDB service for data storage    
   mongo:
     image: mongo
     restart: always
@@ -16,6 +18,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+  # only for development purposes, provides a web interface for MongoDB
   mongo-express:
     image: mongo-express
     restart: always
