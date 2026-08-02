@@ -15,6 +15,10 @@ export class NotificationGateway implements OnModuleInit {
   private userSocketMap = new Map<string, string>(); // mongoDbId -> socket.id
 
   onModuleInit() {
+    if (!this.server) {
+      console.error('❌ WebSocket server not initialized!');
+      return;
+    }
     this.server.on('connection', (socket: Socket) => {
       const mongoDbId = socket.handshake.query.mongoDbId as string;
 

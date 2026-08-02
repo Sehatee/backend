@@ -21,8 +21,8 @@ export class EmailsService {
 
   resend = new Resend(process.env.RESEND_API_KEY);
   //send with Resend
+  
   //   async sendWelcomEmail(to: string, username: string) {
-
   //     const html = pug.renderFile(
   //       `${__dirname}/../views/emails/sendWelcome.pug`,
   //       {

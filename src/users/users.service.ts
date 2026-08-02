@@ -223,4 +223,23 @@ export class UsersService {
     }
     return user;
   }
+
+  // for only when createing admin user in the first time
+  async createAdminUser(user: {
+    username: string;
+    email: string;
+    password: string;
+    role: 'admin';
+    confirmPassword?: string;
+  }): Promise<User> {
+    const existingAdmin = await this.userModel.findOne({ role: 'admin' });
+    if (existingAdmin) {
+      throw new HttpException('Admin user already exists', 400);
+    }
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+    user.confirmPassword = user.password;
+    user.password = hashedPassword;
+    user.role = 'admin';
+    return await this.userModel.create(user);
+  }
 }

@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
@@ -11,6 +10,7 @@ async function bootstrap() {
         'https://www.sehatte.com',
         'https://sehatte.com',
         'http://localhost:3000',
+        'https://frontend-teal-nu-15.vercel.app/',
       ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
@@ -61,6 +61,6 @@ async function bootstrap() {
   app.setGlobalPrefix('/api/v1');
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(process.env.PORT ?? 4000 , '0.0.0.0');
+  await app.listen(process.env.PORT ?? 4000, '0.0.0.0');
 }
 bootstrap();

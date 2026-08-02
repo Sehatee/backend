@@ -59,7 +59,7 @@ export class AuthController {
     user: User,
   ) {
     user.picture = (await this.uploadFilesService.uploadFile(file)).secure_url;
-    // await this.emailsService.sendWelcomEmail(user.email, user.username);
+    await this.emailsService.sendWelcomEmail(user.email, user.username);
     return await this.authService.signUp(user);
   }
 

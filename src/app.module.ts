@@ -1,15 +1,9 @@
 import { DoctorsModule } from './doctors/doctors.module';
-import { DoctorsController } from './doctors/doctors.controller';
 import { ReviewsModule } from './reviews/reviews.module';
-import { ReviewsController } from './reviews/reviews.controller';
 import { EmailsModule } from './emails/emails.module';
 import { UploadFilesModule } from './upload-files/upload-files.module';
-import { UploadFilesService } from './upload-files/upload-files.service';
 import { NotificationsModule } from './notifications/notifications.module';
-import { NotificationsService } from './notifications/notifications.service';
 import { MedicalRecordsModule } from './medicalRecords/medicalrecords.module';
-import { MedicalRecordsService } from './medicalRecords/medicalrecords.service';
-import { MedicalRecordsController } from './medicalRecords/medicalrecords.controller';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
