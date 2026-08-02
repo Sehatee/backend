@@ -10,7 +10,7 @@ async function bootstrap() {
         'https://www.sehatte.com',
         'https://sehatte.com',
         'http://localhost:3000',
-        'https://frontend-teal-nu-15.vercel.app/',
+        'https://frontend-teal-nu-15.vercel.app',
       ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
