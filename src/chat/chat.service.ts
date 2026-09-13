@@ -19,6 +19,15 @@ export class ChatService {
     private readonly conversationModel: Model<Conversation>,
   ) {}
 
+  async createConversation(doctorId: string, patientId: string) {
+    const conversation = await this.conversationModel.create({
+      doctor: new Types.ObjectId(doctorId),
+      patient: new Types.ObjectId(patientId),
+      participants: [doctorId, patientId],
+    });
+    return conversation;
+  }
+
   async getAllConversations(patientId: string) {
     const conversations = await this.conversationModel
       .find({
@@ -30,7 +39,6 @@ export class ChatService {
     }
     return conversations;
   }
-
   // replce this by (getConversation , createConversation)
   async getOrCreateConversation(
     doctorId: string,
@@ -59,13 +67,6 @@ export class ChatService {
     if (!conversation) {
       throw new HttpException('this conv is not found', HttpStatus.BAD_REQUEST);
     }
-    return conversation;
-  }
-  async createConversation(doctorId: string, patientId: string) {
-    const conversation = await this.conversationModel.create({
-      doctor: new Types.ObjectId(doctorId),
-      patient: new Types.ObjectId(patientId),
-    });
     return conversation;
   }
 

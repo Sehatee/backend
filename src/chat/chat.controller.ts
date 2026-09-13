@@ -9,6 +9,7 @@ import {
   UseGuards,
   ParseIntPipe,
   DefaultValuePipe,
+  Post,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
@@ -27,6 +28,16 @@ export class ChatController {
   async getConversations(@Req() req: any) {
     const patientId = req.user.id;
     return this.chatService.getAllConversations(patientId);
+  }
+
+  @Post('conversations/:doctorId')
+  @UseGuards(AuthGuard)
+  async createConversation(
+    @Req() req: any,
+    @Param('doctorId') doctorId: string,
+  ) {
+    const patientId = req.user.id;
+    return this.chatService.createConversation(doctorId, patientId);
   }
 
   // End Point: GET /chats/conversation/:doctorId
