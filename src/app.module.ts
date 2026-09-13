@@ -1,3 +1,4 @@
+import { ChatModule } from './chat/chat.module';
 import { DoctorsModule } from './doctors/doctors.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { EmailsModule } from './emails/emails.module';
@@ -12,9 +13,10 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
+// import { MessageGateway } from './message/gateway/message.gateway';
 
 @Module({
-  imports: [
+  imports: [ 
     ConfigModule.forRoot(),
     DatabaseModule,
     UploadFilesModule,
@@ -32,7 +34,9 @@ import { ConfigModule } from '@nestjs/config';
     // finish
     MedicalRecordsModule,
     // finish
-    NotificationsModule,
+    // NotificationsModule,
+    // dev
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService],
