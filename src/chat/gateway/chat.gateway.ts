@@ -9,14 +9,17 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from '../chat.service';
-
+import { UploadFilesService } from 'src/upload-files/upload-files.service';
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly uploadFilesService: UploadFilesService,
+  ) {}
 
   handleConnection(client: Socket) {
     console.log(`Client Connected: ${client.id}`);
@@ -49,12 +52,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       attachments?: { type: 'image' | 'document' | 'audio'; url: string }[];
     },
   ) {
+    // upload files if exist
+    let attachmentsUrls = [];
+    // upload the files when is exist
+    if (payload.attachments) {
+      attachmentsUrls = await this.uploadFilesService.uploadMessageFiles(
+        payload.attachments,
+      );
+    }
+    payload.attachments = attachmentsUrls;
+
     // 1. حفظ الرسالة في قاعدة البيانات
     const savedMessage = await this.chatService.saveMessage(payload);
 
     const roomName = savedMessage.conversationId.toString();
 
-    // 2. بث الرسالة لكل المتواجدين في غرفة المحادثة
     this.server.to(roomName).emit('newMessage', savedMessage);
 
     return {
@@ -62,7 +74,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       data: savedMessage,
     };
   }
-
 
   @SubscribeMessage('markAsRead')
   async handleMarkAsRead(

@@ -20,8 +20,12 @@ export const messageSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      required: true,
+      required: function () {
+        // تكون المطلوبة فقط إذا لم تكن هناك أي مرفقات
+        return !this.attachments || this.attachments.length === 0;
+      },
       trim: true,
+      default: '',
     },
     attachments: [
       {

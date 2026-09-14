@@ -6,9 +6,10 @@ import { UsersModule } from 'src/users/users.module';
 import { messageProviders } from './providers/message.provider';
 import { conversationProviders } from './providers/conversation.provider';
 import { DatabaseModule } from 'src/database/database.module';
+import { UploadFilesModule } from 'src/upload-files/upload-files.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule],
+  imports: [DatabaseModule, UsersModule, UploadFilesModule],
   controllers: [ChatController],
   providers: [
     ...conversationProviders,

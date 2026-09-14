@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import { Conversation } from './interfaces/conversation.interface';
 import { Message } from './interfaces/message.interface';
@@ -28,12 +22,12 @@ export class ChatService {
     return conversation;
   }
 
-  async getAllConversations(patientId: string) {
+  async getAllConversations(userId: string, role: string) {
     const conversations = await this.conversationModel
       .find({
-        patient: new Types.ObjectId(patientId),
+        [role]: new Types.ObjectId(userId),
       })
-      .populate('doctor', 'username specialization picture');
+      .populate('doctor patient', 'username specialization picture');
     if (!conversations) {
       throw new HttpException('this conv is not found', HttpStatus.BAD_REQUEST);
     }
@@ -75,13 +69,12 @@ export class ChatService {
       dto.doctorId,
       dto.patientId,
     );
-
     const newMessage = await this.messageModel.create({
       conversationId: conversation._id,
       sender: dto.senderId,
       receiver: dto.receiverId,
-      content: dto.content,
-      attachments: dto.attachments || [],
+      content: dto.content || '',
+      attachments: dto.attachments,
     });
 
     // تحديد المائل المستلم لتحديث الـ unreadCount

@@ -3,6 +3,6 @@ export class SendMessageDto {
   receiverId: string;
   doctorId: string;
   patientId: string;
-  content: string;
+  content: string | '';
   attachments?: { type: 'image' | 'document' | 'audio'; url: string }[];
 }
