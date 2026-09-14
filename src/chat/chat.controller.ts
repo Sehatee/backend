@@ -27,7 +27,6 @@ export class ChatController {
   @UseGuards(AuthGuard)
   async getConversations(@Req() req: any) {
     const user = req.user;
-    console.log(user);
     return this.chatService.getAllConversations(user.id, user.role);
   }
 

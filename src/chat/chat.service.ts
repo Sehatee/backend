@@ -19,7 +19,11 @@ export class ChatService {
       patient: new Types.ObjectId(patientId),
       participants: [doctorId, patientId],
     });
-    return conversation;
+
+    return conversation.populate(
+      'doctor patient',
+      'username specialization picture',
+    );
   }
 
   async getAllConversations(userId: string, role: string) {
@@ -31,6 +35,7 @@ export class ChatService {
     if (!conversations) {
       throw new HttpException('this conv is not found', HttpStatus.BAD_REQUEST);
     }
+
     return conversations;
   }
   // replce this by (getConversation , createConversation)
